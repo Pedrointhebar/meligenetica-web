@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --amber: #C9861A;
+  --amber-soft: rgba(201,134,26,0.12);
+  --earth: #6B4F2A;
+  --bg: #F7F3EE;
+  --surface: #FFFFFF;
+  --border: #E2D9CC;
+  --text: #1A1209;
+  --text2: #5C4A2A;
+  --text3: #9B8B70;
+  --green: #2D8A4E;
+  --red: #C0392B;
+  --orange: #D4680A;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Score ring animation */
+.score-ring-fill {
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Progress bar */
+.prog-fill {
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* Card hover */
+.card-hover {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+}
