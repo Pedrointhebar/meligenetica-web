@@ -71,7 +71,7 @@ export default function CadastroPage() {
           MeliGenética
         </h1>
         <p style={{ fontSize: 14, color: 'var(--text3)', marginTop: 4 }}>
-          100% gratuito · Sem cartão de crédito
+          7 dias grátis · R$&nbsp;5,00/mês
         </p>
       </div>
 

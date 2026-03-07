@@ -1,6 +1,27 @@
 // Motor de scoring fenotípico
 // Ref.: Souza et al. (2018), Nunes-Silva et al. (2016)
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+export interface CheckIn {
+  id: string
+  data: string
+  populacao: number
+  mansidao: number
+  sanidade: number
+  atividade: number
+  notas: string
+}
+
+export interface Colmeia {
+  id: string
+  nome: string
+  especie: string
+  producaoAnual: number
+  anoProducao: number
+  historico: CheckIn[]
+}
+
+// ─── Constantes ───────────────────────────────────────────────────────────────
 export const PESOS = {
   producao:  0.30,
   populacao: 0.20,
@@ -9,6 +30,22 @@ export const PESOS = {
   atividade: 0.15,
 }
 
+export const ESPECIES = [
+  { id: 'jatai',      nome: 'Jataí',       sci: 'Tetragonisca angustula' },
+  { id: 'mandacaia',  nome: 'Mandaçaia',   sci: 'Melipona quadrifasciata' },
+  { id: 'urucu',      nome: 'Uruçu',       sci: 'Melipona scutellaris' },
+  { id: 'tubi',       nome: 'Mirim',       sci: 'Plebeia spp.' },
+  { id: 'boroi',      nome: 'Boroi',       sci: 'Melipona fasciculata' },
+  { id: 'tiuba',      nome: 'Tiúba',       sci: 'Melipona compressipes' },
+  { id: 'manduri',    nome: 'Manduri',     sci: 'Melipona marginata' },
+  { id: 'irai',       nome: 'Iraí',        sci: 'Nannotrigona testaceicornis' },
+  { id: 'bugia',      nome: 'Bugia',       sci: 'Melipona bicolor' },
+  { id: 'mandaguari', nome: 'Mandaguari',  sci: 'Scaptotrigona postica' },
+  { id: 'tubuna',     nome: 'Tubuna',      sci: 'Scaptotrigona bipunctata' },
+  { id: 'outra',      nome: 'Outra',       sci: '' },
+]
+
+// ─── Funções de scoring ───────────────────────────────────────────────────────
 export function norm(v: number, mn: number, mx: number) {
   return Math.min(1, Math.max(0, (v - mn) / (mx - mn)))
 }
@@ -41,13 +78,7 @@ export function scoreLabel(s: number) {
   return 'Crítico'
 }
 
-export function canSplit(c: Colmeia): boolean {
-  const u = lastSnap(c)
-  if (!u) return false
-  return u.populacao >= 6 && u.sanidade >= 3 && currentScore(c) >= 60
-}
-
-export function lastSnap(c: Colmeia) {
+export function lastSnap(c: Colmeia): CheckIn | null {
   return c.historico.length ? c.historico[c.historico.length - 1] : null
 }
 
@@ -55,6 +86,12 @@ export function currentScore(c: Colmeia): number {
   const u = lastSnap(c)
   if (!u) return 0
   return calcScore({ ...u, producao: c.producaoAnual })
+}
+
+export function canSplit(c: Colmeia): boolean {
+  const u = lastSnap(c)
+  if (!u) return false
+  return u.populacao >= 6 && u.sanidade >= 3 && currentScore(c) >= 60
 }
 
 export function trend(c: Colmeia): 'up' | 'down' | 'stable' {
@@ -66,43 +103,8 @@ export function trend(c: Colmeia): 'up' | 'down' | 'stable' {
   return d > 3 ? 'up' : d < -3 ? 'down' : 'stable'
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-export interface CheckIn {
-  id: string
-  data: string
-  populacao: number
-  mansidao: number
-  sanidade: number
-  atividade: number
-  notas: string
-}
-
-export interface Colmeia {
-  id: string
-  nome: string
-  especie: string
-  producaoAnual: number
-  anoProducao: number
-  historico: CheckIn[]
-}
-
-export const ESPECIES = [
-  { id: 'jatai',     nome: 'Jataí',       sci: 'Tetragonisca angustula' },
-  { id: 'mandacaia', nome: 'Mandaçaia',   sci: 'Melipona quadrifasciata' },
-  { id: 'urucu',     nome: 'Uruçu',       sci: 'Melipona scutellaris' },
-  { id: 'tubi',      nome: 'Mirim',       sci: 'Plebeia spp.' },
-  { id: 'boroi',     nome: 'Boroi',       sci: 'Melipona fasciculata' },
-  { id: 'tiuba',     nome: 'Tiúba',       sci: 'Melipona compressipes' },
-  { id: 'manduri',   nome: 'Manduri',     sci: 'Melipona marginata' },
-  { id: 'irai',      nome: 'Iraí',        sci: 'Nannotrigona testaceicornis' },
-  { id: 'bugia',     nome: 'Bugia',       sci: 'Melipona bicolor' },
-  { id: 'mandaguari',nome: 'Mandaguari',  sci: 'Scaptotrigona postica' },
-  { id: 'tubuna',    nome: 'Tubuna',      sci: 'Scaptotrigona bipunctata' },
-  { id: 'outra',     nome: 'Outra',       sci: '' },
-]
-
-// ─── Sample data ─────────────────────────────────────────────────────────────
-function fakeHist(base: Record<string,number>, weeks: number): CheckIn[] {
+// ─── Sample data ──────────────────────────────────────────────────────────────
+function fakeHist(base: Record<string, number>, weeks: number): CheckIn[] {
   return Array.from({ length: weeks }, (_, i) => {
     const d = new Date()
     d.setDate(d.getDate() - (weeks - 1 - i) * 7)

@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
-const PIX_PAYLOAD = "00020126580014BR.GOV.BCB.PIX013670f87166-2838-47aa-837e-3e29c5770d6c5204000053039865802BR5911Pedro Nunes6009SAO PAULO62070503***63046F12"
-const PIX_CHAVE = "70f87166-2838-47aa-837e-3e29c5770d6c"
+const PIX_PAYLOAD = "00020126330014BR.GOV.BCB.PIX0111149740429045204000053039865802BR5911Pedro Nunes6009SAO PAULO62070503***6304EBD0"
+const PIX_CHAVE = "14974042904"
 
 export default function ApoiarPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -39,6 +39,7 @@ export default function ApoiarPage() {
           Abrir app →
         </Link>
       </nav>
+
       <div style={{ maxWidth: 480, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
         <div style={{ fontSize: 56, marginBottom: 16 }}>🍯</div>
         <h1 style={{ fontSize: 30, fontWeight: 800, fontFamily: 'Georgia, serif',
@@ -49,14 +50,17 @@ export default function ApoiarPage() {
           O MeliGenética é gratuito e feito com carinho para a comunidade de meliponicultores.
           Se ele te ajuda, considere apoiar com qualquer valor via Pix. 🐝
         </p>
+
         <div style={{ background: 'white', borderRadius: 20, padding: 28,
           border: '1px solid #E2D9CC', display: 'inline-block',
           boxShadow: '0 4px 24px rgba(0,0,0,0.06)', marginBottom: 28 }}>
-          <canvas ref={canvasRef} width={220} height={220} style={{ display: 'block', borderRadius: 8 }} />
+          <canvas ref={canvasRef} width={220} height={220}
+            style={{ display: 'block', borderRadius: 8 }} />
           <p style={{ margin: '16px 0 0', fontSize: 13, color: '#9B8B70', fontWeight: 600 }}>
             Escaneie com qualquer app bancário
           </p>
         </div>
+
         <div style={{ background: 'white', borderRadius: 14, padding: '16px 20px',
           border: '1px solid #E2D9CC', marginBottom: 16,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
@@ -65,20 +69,25 @@ export default function ApoiarPage() {
               textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>
               Chave Pix (CPF)
             </div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1209' }}>{PIX_CHAVE}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1209', letterSpacing: '0.5px' }}>
+              {PIX_CHAVE}
+            </div>
           </div>
           <button onClick={copiarChave} style={{
-            background: copiado ? '#22c55e' : '#C9861A', color: 'white',
-            border: 'none', borderRadius: 8, padding: '10px 18px',
-            fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap',
+            background: copiado ? '#22c55e' : '#C9861A',
+            color: 'white', border: 'none', borderRadius: 8,
+            padding: '10px 18px', fontWeight: 700, fontSize: 14,
+            cursor: 'pointer', whiteSpace: 'nowrap',
           }}>
             {copiado ? '✓ Copiado!' : 'Copiar'}
           </button>
         </div>
+
         <p style={{ fontSize: 13, color: '#9B8B70', lineHeight: 1.6 }}>
           Titular: <strong>Pedro Nunes</strong><br />
           Qualquer valor é bem-vindo e muito apreciado 💛
         </p>
+
         <div style={{ marginTop: 48 }}>
           <Link href="/app" style={{ background: '#C9861A', color: 'white',
             padding: '12px 28px', borderRadius: 10, fontWeight: 700,

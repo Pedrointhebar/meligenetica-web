@@ -12,11 +12,20 @@ export default function LandingPage() {
     { icon:'📈', titulo:'Gráficos de evolução',   desc:'Visualize a tendência fenotípica de cada parâmetro ao longo do tempo.' },
     { icon:'🧬', titulo:'Diagnóstico automático', desc:'Interpretação científica baseada em Souza et al. (2018) e Nunes-Silva et al. (2016).' },
     { icon:'🪲', titulo:'Recomendação de divisão', desc:'Critérios objetivos para propagação do melhor material genético do plantel.' },
-    { icon:'🌐', titulo:'Acesso web',             desc:'Use no computador ou celular. Dados salvos na nuvem.' },
+    { icon:'🌐', titulo:'Acesso web e iOS',       desc:'Use no computador e no iPhone. Dados sincronizados.' },
+  ]
+
+  const refs = [
+    'Souza et al. (2018) — Critérios para seleção genética de Meliponini',
+    'Nunes-Silva et al. (2016) — Boas práticas de manejo para abelhas nativas',
+    'Villas-Bôas (2012) — Mel de abelhas sem ferrão: produção e controle de qualidade',
+    'Kerr et al. (1996) — Biodiversidade e meliponicultura amazônica',
   ]
 
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
+
+      {/* ── Nav ── */}
       <nav style={{
         background: 'rgba(247,243,238,0.92)', backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--border)',
@@ -26,22 +35,20 @@ export default function LandingPage() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 24 }}>⬡</span>
-          <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.4px', color: 'var(--amber)' }}>MeliGenética</span>
+          <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.4px', color: 'var(--amber)' }}>
+            MeliGenética
+          </span>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={() => router.push('/login')}
-            style={{ background: 'transparent', color: 'var(--amber)', border: '1.5px solid var(--amber)',
-              borderRadius: 8, padding: '7px 16px', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-            Entrar
-          </button>
-          <button onClick={() => router.push('/cadastro')}
-            style={{ background: 'var(--amber)', color: 'white', border: 'none',
-              borderRadius: 8, padding: '8px 18px', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-            Criar conta
-          </button>
-        </div>
+        <button onClick={() => router.push('/app')} style={{
+          background: 'var(--amber)', color: 'white',
+          border: 'none', borderRadius: 8, padding: '8px 18px',
+          fontWeight: 600, fontSize: 14, cursor: 'pointer',
+        }}>
+          Acessar app
+        </button>
       </nav>
 
+      {/* ── Hero ── */}
       <section style={{ maxWidth: 900, margin: '0 auto', padding: '80px 24px 64px', textAlign: 'center' }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -65,14 +72,18 @@ export default function LandingPage() {
           de divisão com base em dados — não em intuição.
         </p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={() => router.push('/cadastro')}
-            style={{ background: 'var(--amber)', color: 'white', border: 'none',
-              borderRadius: 10, padding: '16px 36px', fontSize: 17, fontWeight: 700, cursor: 'pointer' }}>
+          <button onClick={() => router.push('/cadastro')} style={{
+            background: 'var(--amber)', color: 'white',
+            border: 'none', borderRadius: 10, padding: '16px 36px',
+            fontSize: 17, fontWeight: 700, cursor: 'pointer',
+          }}>
             Criar conta grátis →
           </button>
-          <button onClick={() => router.push('/login')}
-            style={{ background: 'white', color: 'var(--amber)', border: '1.5px solid var(--amber)',
-              borderRadius: 10, padding: '16px 28px', fontSize: 17, fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={() => router.push('/login')} style={{
+            background: 'white', color: 'var(--amber)',
+            border: '1.5px solid var(--amber)', borderRadius: 10, padding: '16px 28px',
+            fontSize: 17, fontWeight: 600, cursor: 'pointer',
+          }}>
             Entrar
           </button>
         </div>
@@ -81,16 +92,21 @@ export default function LandingPage() {
         </p>
       </section>
 
+      {/* ── Features ── */}
       <section style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px 80px' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 28, fontWeight: 700,
+        <h2 style={{
+          textAlign: 'center', fontSize: 28, fontWeight: 700,
           letterSpacing: '-0.5px', fontFamily: 'Georgia, serif',
-          marginBottom: 40, color: 'var(--text)' }}>
+          marginBottom: 40, color: 'var(--text)',
+        }}>
           Tudo que um meliponicultor precisa
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
           {beneficios.map(b => (
-            <div key={b.titulo} style={{ background: 'white', borderRadius: 14,
-              border: '1px solid var(--border)', padding: '20px' }}>
+            <div key={b.titulo} className="card-hover" style={{
+              background: 'white', borderRadius: 14,
+              border: '1px solid var(--border)', padding: '20px',
+            }}>
               <div style={{ fontSize: 28, marginBottom: 10 }}>{b.icon}</div>
               <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6, color: 'var(--text)' }}>{b.titulo}</div>
               <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.5 }}>{b.desc}</div>
@@ -99,28 +115,52 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section style={{ background: 'var(--amber)', padding: '64px 24px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: 32, fontWeight: 800, color: 'white',
-          fontFamily: 'Georgia, serif', marginBottom: 16, letterSpacing: '-0.5px' }}>
-          Comece agora, gratuitamente
-        </h2>
-        <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.85)', marginBottom: 32, maxWidth: 480, margin: '0 auto 32px' }}>
-          Crie sua conta e registre suas primeiras colmeias em menos de 2 minutos.
-        </p>
-        <button onClick={() => router.push('/cadastro')}
-          style={{ background: 'white', color: 'var(--amber)', border: 'none',
-            borderRadius: 10, padding: '16px 40px', fontSize: 17, fontWeight: 700, cursor: 'pointer' }}>
-          Criar conta grátis →
-        </button>
+      {/* ── CTA final ── */}
+      <section style={{
+        background: 'white', borderTop: '1px solid var(--border)',
+        borderBottom: '1px solid var(--border)', padding: '64px 24px',
+        textAlign: 'center',
+      }}>
+        <div style={{ maxWidth: 460, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.5px', fontFamily: 'Georgia, serif', marginBottom: 8 }}>
+            Comece agora, é gratuito
+          </h2>
+          <p style={{ color: 'var(--text3)', marginBottom: 32 }}>
+            Sem cartão de crédito. Sem limite de colmeias.
+          </p>
+          <button onClick={() => router.push('/cadastro')} style={{
+            background: 'var(--amber)', color: 'white',
+            border: 'none', borderRadius: 10, padding: '16px 40px',
+            fontSize: 17, fontWeight: 700, cursor: 'pointer',
+          }}>
+            Criar minha conta →
+          </button>
+        </div>
       </section>
 
-      <footer style={{ borderTop: '1px solid var(--border)', padding: '32px 24px', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text3)', fontSize: 13 }}>
-          © 2025 MeliGenética ·{' '}
-          <a href="/privacidade" style={{ color: 'var(--amber)', textDecoration: 'none' }}>Privacidade</a>
-          {' · '}
-          <a href="/termos" style={{ color: 'var(--amber)', textDecoration: 'none' }}>Termos</a>
-        </p>
+      {/* ── Referências ── */}
+      <section style={{ maxWidth: 760, margin: '0 auto', padding: '64px 24px' }}>
+        <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 20, fontFamily: 'Georgia, serif', color: 'var(--text)' }}>
+          🔬 Embasamento científico
+        </h2>
+        <div style={{ background: 'white', borderRadius: 14, border: '1px solid var(--border)', overflow: 'hidden' }}>
+          {refs.map((ref, i) => (
+            <div key={i} style={{
+              padding: '14px 18px', fontSize: 14, color: 'var(--text2)',
+              borderBottom: i < refs.length - 1 ? '1px solid var(--border)' : 'none',
+              fontStyle: 'italic', lineHeight: 1.5,
+            }}>
+              <span style={{ fontStyle: 'normal', marginRight: 8 }}>📄</span>{ref}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer style={{ borderTop: '1px solid var(--border)', padding: '24px', textAlign: 'center', fontSize: 13, color: 'var(--text3)' }}>
+        © 2025 MeliGenética · Todos os direitos reservados ·{' '}
+        <a href="/privacidade" style={{ color: 'var(--amber)' }}>Privacidade</a> ·{' '}
+        <a href="/termos" style={{ color: 'var(--amber)' }}>Termos</a>
       </footer>
     </div>
   )
