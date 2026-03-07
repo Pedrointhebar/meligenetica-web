@@ -777,12 +777,12 @@ export default function AppPage() {
           {syncing && (
             <span style={{ fontSize: 11, color: C.text3 }}>💾 salvando...</span>
           )}
+          <a href="/apoiar" style={{ display: "flex", alignItems: "center", gap: 5, background: "#FFF8EC", borderRadius: 99, padding: "5px 12px", border: "1px solid rgba(201,134,26,0.3)", textDecoration: "none", fontSize: 12, fontWeight: 700, color: "#C9861A" }}>🍯 Apoiar</a>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 6,
             background: C.bg, borderRadius: 99, padding: '4px 10px 4px 6px',
             border: `1px solid ${C.border}`, cursor: 'pointer',
           }}
-          <a href="/apoiar" style={{ display: "flex", alignItems: "center", gap: 5, background: "#FFF8EC", borderRadius: 99, padding: "5px 12px", border: "1px solid rgba(201,134,26,0.3)", textDecoration: "none", fontSize: 12, fontWeight: 700, color: "#C9861A" }}>🍯 Apoiar</a>
             onClick={() => signOut({ callbackUrl: '/login' })}
             title="Sair"
           >
