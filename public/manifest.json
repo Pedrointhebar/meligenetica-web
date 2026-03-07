@@ -1,0 +1,16 @@
+{
+  "name": "MeliGenética",
+  "short_name": "MeliGenética",
+  "description": "Seleção genética de abelhas sem ferrão",
+  "start_url": "/app",
+  "display": "standalone",
+  "background_color": "#F7F3EE",
+  "theme_color": "#C9861A",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["productivity", "lifestyle"],
+  "lang": "pt-BR"
+}

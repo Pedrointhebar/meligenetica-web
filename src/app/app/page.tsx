@@ -1,37 +1,73 @@
 'use client'
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import {
   LineChart, Line, XAxis, YAxis, Tooltip,
   ResponsiveContainer, AreaChart, Area,
 } from 'recharts'
 import {
-  Colmeia, CheckIn, ESPECIES, SAMPLE_DATA,
+  Colmeia, CheckIn, ESPECIES,
   currentScore, lastSnap, canSplit, trend, scoreColor, scoreLabel,
-  calcScore, SAMPLE_DATA as SD,
+  calcScore,
 } from '@/lib/scoring'
 
-// ─── LocalStorage persistence ────────────────────────────────────────────────
+// ─── API persistence ──────────────────────────────────────────────────────────
 function useColmeias() {
   const [colmeias, setColmeias] = useState<Colmeia[]>([])
   const [loaded, setLoaded] = useState(false)
+  const [syncing, setSyncing] = useState(false)
 
+  // Carrega do servidor na montagem
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('meli_colmeias_v1')
-      setColmeias(raw ? JSON.parse(raw) : SAMPLE_DATA)
-    } catch {
-      setColmeias(SAMPLE_DATA)
+    fetch('/api/colmeias')
+      .then(r => r.ok ? r.json() : [])
+      .then(data => { setColmeias(data); setLoaded(true) })
+      .catch(() => setLoaded(true))
+  }, [])
+
+  // Atualiza estado local imediatamente + sincroniza com servidor
+  const syncColmeia = useCallback(async (colmeia: Colmeia) => {
+    setSyncing(true)
+    // Salva colmeia
+    await fetch('/api/colmeias', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'upsert_colmeia', colmeia }),
+    })
+    // Salva cada check-in
+    for (const checkin of colmeia.historico) {
+      await fetch('/api/colmeias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'upsert_checkin', colmeiaId: colmeia.id, checkin }),
+      })
     }
-    setLoaded(true)
+    setSyncing(false)
+  }, [])
+
+  const syncCheckin = useCallback(async (colmeiaId: string, checkin: CheckIn) => {
+    await fetch('/api/colmeias', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'upsert_checkin', colmeiaId, checkin }),
+    })
+  }, [])
+
+  const syncDelete = useCallback(async (colmeiaId: string) => {
+    await fetch('/api/colmeias', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete_colmeia', colmeiaId }),
+    })
   }, [])
 
   const save = useCallback((list: Colmeia[]) => {
     setColmeias(list)
-    try { localStorage.setItem('meli_colmeias_v1', JSON.stringify(list)) } catch {}
   }, [])
 
-  return { colmeias, save, loaded }
+  return { colmeias, setColmeias, save, loaded, syncing, syncColmeia, syncCheckin, syncDelete }
 }
 
 // ─── Design helpers ───────────────────────────────────────────────────────────
@@ -633,7 +669,15 @@ function DetalheView({
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function AppPage() {
-  const { colmeias, save, loaded } = useColmeias()
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  // Redireciona para login se não autenticado
+  useEffect(() => {
+    if (status === 'unauthenticated') router.push('/login')
+  }, [status, router])
+
+  const { colmeias, setColmeias, save, loaded, syncing, syncColmeia, syncCheckin, syncDelete } = useColmeias()
   const [tab, setTab] = useState<'painel'|'ranking'|'colmeias'>('painel')
   const [detalhe, setDetalhe] = useState<Colmeia | null>(null)
   const [modalCheckin, setModalCheckin] = useState<Colmeia | null>(null)
@@ -647,35 +691,50 @@ export default function AppPage() {
 
   const ranking = useMemo(() => [...colmeias].sort((a, b) => currentScore(b) - currentScore(a)), [colmeias])
 
-  const saveCheckin = (colmeiaId: string, snap: CheckIn) => {
-    save(colmeias.map(c => {
+  const saveCheckin = async (colmeiaId: string, snap: CheckIn) => {
+    const updated = colmeias.map(c => {
       if (c.id !== colmeiaId) return c
       const hist = c.historico.filter(h => h.data !== snap.data)
       return { ...c, historico: [...hist, snap].sort((a, b) => a.data.localeCompare(b.data)) }
-    }))
-    // Update detalhe if open
+    })
+    save(updated)
     if (detalhe?.id === colmeiaId) {
-      setDetalhe(prev => {
-        if (!prev) return null
-        const hist = prev.historico.filter(h => h.data !== snap.data)
-        return { ...prev, historico: [...hist, snap].sort((a, b) => a.data.localeCompare(b.data)) }
-      })
+      const c = updated.find(x => x.id === colmeiaId)!
+      setDetalhe(c)
     }
+    await syncCheckin(colmeiaId, snap)
   }
 
-  const saveColheita = (colmeiaId: string, kg: number, ano: number) => {
-    save(colmeias.map(c => c.id !== colmeiaId ? c : { ...c, producaoAnual: kg, anoProducao: ano }))
+  const saveColheita = async (colmeiaId: string, kg: number, ano: number) => {
+    const updated = colmeias.map(c => c.id !== colmeiaId ? c : { ...c, producaoAnual: kg, anoProducao: ano })
+    save(updated)
     if (detalhe?.id === colmeiaId) setDetalhe(prev => prev ? { ...prev, producaoAnual: kg, anoProducao: ano } : null)
+    const colmeia = updated.find(c => c.id === colmeiaId)!
+    await syncColmeia(colmeia)
   }
 
-  const addColmeia = (c: Colmeia) => { save([...colmeias, c]); setModalNova(false) }
-  const deleteColmeia = (id: string) => { save(colmeias.filter(c => c.id !== id)); setDetalhe(null) }
+  const addColmeia = async (c: Colmeia) => {
+    save([...colmeias, c])
+    setModalNova(false)
+    await syncColmeia(c)
+  }
 
-  if (!loaded) return (
+  const deleteColmeia = async (id: string) => {
+    save(colmeias.filter(c => c.id !== id))
+    setDetalhe(null)
+    await syncDelete(id)
+  }
+
+  if (status === 'loading' || !loaded) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.bg }}>
-      <div style={{ fontSize: 40 }}>🐝</div>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 12 }}>🐝</div>
+        <div style={{ color: C.text3, fontSize: 14 }}>Carregando seu meliponário...</div>
+      </div>
     </div>
   )
+
+  if (status === 'unauthenticated') return null
 
   const hoje = new Date()
   const lim = new Date(hoje); lim.setDate(hoje.getDate() - 7)
@@ -707,10 +766,38 @@ export default function AppPage() {
         background: 'rgba(247,243,238,0.92)', backdropFilter: 'blur(12px)',
         borderBottom: `1px solid ${C.border}`,
         position: 'sticky', top: 0, zIndex: 40,
-        height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 16, fontWeight: 700, letterSpacing: '-0.3px', color: C.amber,
+        height: 52, display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', padding: '0 16px',
       }}>
-        ⬡ MeliGenética
+        <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.3px', color: C.amber }}>
+          ⬡ MeliGenética
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {syncing && (
+            <span style={{ fontSize: 11, color: C.text3 }}>💾 salvando...</span>
+          )}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: C.bg, borderRadius: 99, padding: '4px 10px 4px 6px',
+            border: `1px solid ${C.border}`, cursor: 'pointer',
+          }}
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            title="Sair"
+          >
+            <div style={{
+              width: 24, height: 24, borderRadius: '50%',
+              background: `${C.amber}20`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 13, fontWeight: 700, color: C.amber,
+            }}>
+              {session?.user?.name?.[0]?.toUpperCase() || '?'}
+            </div>
+            <span style={{ fontSize: 12, color: C.text2, maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {session?.user?.name?.split(' ')[0]}
+            </span>
+            <span style={{ fontSize: 11, color: C.text3 }}>Sair</span>
+          </div>
+        </div>
       </div>
 
       {/* Content */}

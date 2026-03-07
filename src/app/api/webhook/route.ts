@@ -18,13 +18,13 @@ export async function POST(req: NextRequest) {
 
   switch (event.type) {
     case 'checkout.session.completed':
-      console.log('Assinatura criada:', (event.data.object as any).customer_email)
+      console.log('✅ Assinatura criada:', (event.data.object as any).customer_email)
       break
     case 'customer.subscription.deleted':
-      console.log('Assinatura cancelada')
+      console.log('❌ Assinatura cancelada')
       break
     case 'invoice.payment_failed':
-      console.log('Pagamento falhou')
+      console.log('⚠️ Pagamento falhou')
       break
   }
 

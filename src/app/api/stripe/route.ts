@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}))
     const email = body.email || undefined
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
@@ -21,8 +22,12 @@ export async function POST(req: NextRequest) {
       billing_address_collection: 'required',
       locale: 'pt-BR',
     })
+
     return NextResponse.json({ url: session.url })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Erro ao criar sessão' }, { status: 500 })
+    return NextResponse.json(
+      { error: err.message || 'Erro ao criar sessão' },
+      { status: 500 }
+    )
   }
 }
