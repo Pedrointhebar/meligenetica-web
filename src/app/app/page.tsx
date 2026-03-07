@@ -20,29 +20,24 @@ function useColmeias() {
   const [syncing, setSyncing] = useState(false)
 
   // Carrega do servidor na montagem
- useEffect(() => {
-  fetch('/api/colmeias')
-    .then(res => res.ok ? res.json() : [])
-    .then(data => {
-      setColmeias(Array.isArray(data) ? data : []);
-      setLoaded(true);
-    })
-    .catch(() => {
-      setColmeias([]);
-      setLoaded(true);
-    });
-}, [])
+  useEffect(() => {
+    fetch('/api/colmeias').then(r => r.ok ? r.json() : []).then(r => r.ok ? r.json() : [])
+      .then(r => r.ok ? r.json() : [])
+      .then(data => { setColmeias(Array.isArray(data) ? data : []); setLoaded(true) })
+      .catch(() => { setColmeias([]); setLoaded(true) })
+      .catch(() => setLoaded(true))
+  }, [])
 
   // Atualiza estado local imediatamente + sincroniza com servidor
   const syncColmeia = useCallback(async (colmeia: Colmeia) => {
     setSyncing(true)
     // Salva colmeia
     await fetch('/api/colmeias', {
-      .then(res => res.ok ? res.json() : [])
-      .then(data => {
-        setColmeias(Array.isArray(data) ? data : []);
-        setLoaded(true);
-      })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'upsert_colmeia', colmeia }),
+    })
+    // Salva cada check-in
     for (const checkin of colmeia.historico) {
       await fetch('/api/colmeias', {
         method: 'POST',
