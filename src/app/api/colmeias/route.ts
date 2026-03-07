@@ -11,7 +11,7 @@ export async function GET() {
   if (!session?.user?.id)
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
-  const data = getColmeiasWithCheckins(session.user.id)
+  const data = await getColmeiasWithCheckins(session.user.id)
   return NextResponse.json(data)
 }
 
@@ -27,17 +27,17 @@ export async function POST(req: NextRequest) {
     const userId = session.user.id
 
     if (action === 'upsert_colmeia') {
-      upsertColmeia(userId, colmeia)
+      await upsertColmeia(userId, colmeia)
       return NextResponse.json({ ok: true })
     }
 
     if (action === 'upsert_checkin') {
-      upsertCheckin(colmeiaId, checkin)
+      await upsertCheckin(colmeiaId, checkin)
       return NextResponse.json({ ok: true })
     }
 
     if (action === 'delete_colmeia') {
-      deleteColmeia(colmeiaId, userId)
+      await deleteColmeia(colmeiaId, userId)
       return NextResponse.json({ ok: true })
     }
 
