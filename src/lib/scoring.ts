@@ -94,6 +94,10 @@ export const ESPECIES = [
   { id: 'boroi',     nome: 'Boroi',       sci: 'Melipona fasciculata' },
   { id: 'tiuba',     nome: 'Tiúba',       sci: 'Melipona compressipes' },
   { id: 'manduri',   nome: 'Manduri',     sci: 'Melipona marginata' },
+  { id: 'irai',      nome: 'Iraí',        sci: 'Nannotrigona testaceicornis' },
+  { id: 'bugia',     nome: 'Bugia',       sci: 'Melipona bicolor' },
+  { id: 'mandaguari',nome: 'Mandaguari',  sci: 'Scaptotrigona postica' },
+  { id: 'tubuna',    nome: 'Tubuna',      sci: 'Scaptotrigona bipunctata' },
   { id: 'outra',     nome: 'Outra',       sci: '' },
 ]
 
