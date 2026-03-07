@@ -14,7 +14,7 @@ import {
 } from '@/lib/scoring'
 
 // ─── API persistence ──────────────────────────────────────────────────────────
-function useColmeias() {
+function useColmeias(authenticated: boolean) {
   const [colmeias, setColmeias] = useState<Colmeia[]>([])
   const [loaded, setLoaded] = useState(false)
   const [syncing, setSyncing] = useState(false)
@@ -26,7 +26,7 @@ function useColmeias() {
       .then(data => { setColmeias(Array.isArray(data) ? data : []); setLoaded(true) })
       .catch(() => { setColmeias([]); setLoaded(true) })
       .catch(() => setLoaded(true))
-  }, [])
+  }, [authenticated])
 
   // Atualiza estado local imediatamente + sincroniza com servidor
   const syncColmeia = useCallback(async (colmeia: Colmeia) => {
@@ -46,7 +46,7 @@ function useColmeias() {
       })
     }
     setSyncing(false)
-  }, [])
+  }, [authenticated])
 
   const syncCheckin = useCallback(async (colmeiaId: string, checkin: CheckIn) => {
     await fetch('/api/colmeias', {
@@ -54,7 +54,7 @@ function useColmeias() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'upsert_checkin', colmeiaId, checkin }),
     })
-  }, [])
+  }, [authenticated])
 
   const syncDelete = useCallback(async (colmeiaId: string) => {
     await fetch('/api/colmeias', {
@@ -62,11 +62,11 @@ function useColmeias() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'delete_colmeia', colmeiaId }),
     })
-  }, [])
+  }, [authenticated])
 
   const save = useCallback((list: Colmeia[]) => {
     setColmeias(list)
-  }, [])
+  }, [authenticated])
 
   return { colmeias, setColmeias, save, loaded, syncing, syncColmeia, syncCheckin, syncDelete }
 }
@@ -678,7 +678,7 @@ export default function AppPage() {
     if (status === 'unauthenticated') router.push('/login')
   }, [status, router])
 
-  const { colmeias, setColmeias, save, loaded, syncing, syncColmeia, syncCheckin, syncDelete } = useColmeias()
+  const { colmeias, setColmeias, save, loaded, syncing, syncColmeia, syncCheckin, syncDelete } = useColmeias(status === 'authenticated')
   const [tab, setTab] = useState<'painel'|'ranking'|'colmeias'>('painel')
   const [detalhe, setDetalhe] = useState<Colmeia | null>(null)
   const [modalCheckin, setModalCheckin] = useState<Colmeia | null>(null)
