@@ -27,8 +27,7 @@ export default function SucessoPage() {
           Bem-vindo ao MeliGenética!
         </h1>
         <p style={{ color: 'var(--text2)', marginBottom: 8, lineHeight: 1.6 }}>
-          Sua assinatura foi confirmada. Você tem <strong>7 dias grátis</strong> para
-          explorar todos os recursos.
+          Sua conta foi criada com sucesso. Explore todos os recursos disponíveis.
         </p>
         <p style={{ color: 'var(--text3)', fontSize: 13, marginBottom: 28 }}>
           Redirecionando para o app em instantes...
