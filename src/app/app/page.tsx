@@ -23,7 +23,8 @@ function useColmeias() {
   useEffect(() => {
     fetch('/api/colmeias').then(r => r.ok ? r.json() : []).then(r => r.ok ? r.json() : [])
       .then(r => r.ok ? r.json() : [])
-      .then(data => { setColmeias(data); setLoaded(true) })
+      .then(data => { setColmeias(Array.isArray(data) ? data : []); setLoaded(true) })
+      .catch(() => { setColmeias([]); setLoaded(true) })
       .catch(() => setLoaded(true))
   }, [])
 
