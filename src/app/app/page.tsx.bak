@@ -17,15 +17,15 @@ import {
 function useColmeias(authenticated: boolean) {
   const [colmeias, setColmeias] = useState<Colmeia[]>([])
   const [loaded, setLoaded] = useState(false)
-  useEffect(() => {
   const [syncing, setSyncing] = useState(false)
 
+  // Carrega do servidor na montagem
   useEffect(() => {
-    if (!authenticated) return
-    fetch('/api/colmeias')
+    fetch('/api/colmeias').then(r => r.ok ? r.json() : []).then(r => r.ok ? r.json() : [])
       .then(r => r.ok ? r.json() : [])
       .then(data => { setColmeias(Array.isArray(data) ? data : []); setLoaded(true) })
       .catch(() => { setColmeias([]); setLoaded(true) })
+      .catch(() => setLoaded(true))
   }, [authenticated])
 
   // Atualiza estado local imediatamente + sincroniza com servidor
