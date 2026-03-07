@@ -5,7 +5,8 @@ import {
   getColmeiasWithCheckins, upsertColmeia, upsertCheckin, deleteColmeia
 } from '@/lib/db'
 
-// GET /api/colmeias — retorna todas as colmeias do usuário logado
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id)
@@ -15,7 +16,6 @@ export async function GET() {
   return NextResponse.json(data)
 }
 
-// POST /api/colmeias — salva/atualiza o meliponário completo (sync)
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id)
