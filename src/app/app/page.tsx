@@ -13,6 +13,7 @@ import PixButton from '@/components/PixButton'
 import AlertaCheckin from '@/components/AlertaCheckin'
 import GraficoEvolucao from '@/components/GraficoEvolucao'
 import ExportarPDF from '@/components/ExportarPDF'
+import GraficoScorePlantel from '@/components/GraficoScorePlantel'
 
 // ─── Hook de dados ─────────────────────────────────────────────────────────────
 function useColmeias(userId: string | undefined) {
@@ -631,6 +632,10 @@ export default function AppPage() {
                     </div>
                   )}
                 </Card>
+                <GraficoScorePlantel
+                  colmeias={colmeias}
+                  calcularScore={calcScore}
+                />
                 <SectionHdr title="Top colmeias"/>
                 <Card>
                   {ranking.slice(0, 3).map((c, i) => {
