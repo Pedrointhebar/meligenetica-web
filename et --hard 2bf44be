@@ -1,0 +1,37 @@
+[33md9e4458[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m Corrigir tipos NextAuth Session
+[33mb06ff4a[m Recriar rota NextAuth
+[33me95a527[m Remover auth.ts desnecessário
+[33mbce7858[m Corrigir middleware Edge Runtime
+[33m026ff93[m[33m ([m[1;31morigin/main[m[33m)[m Adicionar botão de apoio extra com chave Pix aleatória
+[33m2bf44be[m Remover Stripe completamente do código
+[33mb77139f[m remover better-sqlite3 incompativel com Vercel
+[33m25d3a44[m aplicar correcoes finais
+[33m2085887[m corrigir erros e remover Stripe
+[33m6aab144[m fix db query colmeias
+[33mde3c35e[m fix fetch wait for session
+[33m8225fe2[m fix await db calls
+[33mcc40ce6[m Revert "fix: corrige persistência de dados e sintaxe sql"
+[33m0a41fa8[m fix: corrige persistência de dados e sintaxe sql
+[33mb80581e[m fix: corrige persistência e exibição de colmeias
+[33mdb3017e[m fix cadastro texto gratuito
+[33m5691376[m add novas especies
+[33ma1e145e[m update pix key
+[33m14abc45[m add botao apoiar
+[33m5a0fb29[m add botao apoiar
+[33m8b66f91[m add pix apoiar page
+[33m3f9896a[m app gratuito sem paywall
+[33m5953d36[m fix array
+[33mc55889d[m fix colmeias array error
+[33m1cd8a89[m remove sqlite definitivo
+[33mbe8f738[m remove sqlite use neon only
+[33m782bfe4[m melhorias v3
+[33m9c84bd6[m fix webhook import
+[33ma0aa941[m fix stripe lazy init
+[33ma4cdc9b[m force stripe fix
+[33m3424269[m fix stripe
+[33mdec5b28[m fix stripe api version
+[33m30ea2cc[m chore: define apiVersion correta para clover
+[33m6e33203[m fix: corrige apiVersion do Stripe para build de produção
+[33m072847e[m fix: atualiza apiVersion do Stripe para 2026-02-25.clover
+[33m34d1433[m fix stripe api version
+[33m27df623[m primeiro commit

@@ -21,6 +21,34 @@ export interface Colmeia {
   historico: CheckIn[]
 }
 
+// ─── Pesos fenotípicos por espécie ─────────────────────────────────────────────
+// Baseado em Souza et al. (2018)
+// Cada valor representa a importância relativa do critério para aquela espécie
+export const PESOS_POR_ESPECIE: Record<string, {
+  populacao: number
+  mansidao: number
+  sanidade: number
+  atividade: number
+}> = {
+  // Espécies de alta produção — mel é prioridade
+  'Melipona fasciculata (Tiúba)':         { populacao: 0.30, mansidao: 0.20, sanidade: 0.30, atividade: 0.20 },
+  'Melipona subnitida (Jandaíra)':        { populacao: 0.30, mansidao: 0.20, sanidade: 0.30, atividade: 0.20 },
+  'Melipona quadrifasciata (Mandaçaia)':  { populacao: 0.25, mansidao: 0.25, sanidade: 0.30, atividade: 0.20 },
+  'Melipona scutellaris (Uruçu)':         { populacao: 0.25, mansidao: 0.25, sanidade: 0.30, atividade: 0.20 },
+
+  // Espécies menores — mansidão e atividade têm mais peso
+  'Tetragonisca angustula (Jataí)':       { populacao: 0.20, mansidao: 0.30, sanidade: 0.25, atividade: 0.25 },
+  'Frieseomelitta varia (Marmelada)':     { populacao: 0.20, mansidao: 0.30, sanidade: 0.25, atividade: 0.25 },
+  'Plebeia spp. (Mirim)':                 { populacao: 0.20, mansidao: 0.30, sanidade: 0.25, atividade: 0.25 },
+
+  // Padrão genérico se a espécie não for encontrada
+  'default':                              { populacao: 0.25, mansidao: 0.25, sanidade: 0.25, atividade: 0.25 },
+}
+
+export function getPesosPorEspecie(especie: string) {
+  return PESOS_POR_ESPECIE[especie] ?? PESOS_POR_ESPECIE['default']
+}
+
 // ─── Constantes ───────────────────────────────────────────────────────────────
 export const PESOS = {
   producao:  0.30,
@@ -56,14 +84,15 @@ export function calcScore(p: {
   mansidao: number
   sanidade: number
   atividade: number
-}): number {
-  const s =
+}, especie: string = 'default'): number {
+  const pesos = getPesosPorEspecie(especie)
+  const score =
     norm(p.producao,  0, 5)  * PESOS.producao  +
-    norm(p.populacao, 0, 10) * PESOS.populacao  +
-    norm(p.mansidao,  0, 5)  * PESOS.mansidao   +
-    norm(p.sanidade,  0, 5)  * PESOS.sanidade   +
-    norm(p.atividade, 0, 5)  * PESOS.atividade
-  return Math.round(s * 1000) / 10
+    norm(p.populacao, 0, 10) * pesos.populacao +
+    norm(p.mansidao,  0, 5)  * pesos.mansidao  +
+    norm(p.sanidade,  0, 5)  * pesos.sanidade  +
+    norm(p.atividade, 0, 5)  * pesos.atividade
+  return Math.round(score * 1000) / 10
 }
 
 export function scoreColor(s: number) {
@@ -85,7 +114,7 @@ export function lastSnap(c: Colmeia): CheckIn | null {
 export function currentScore(c: Colmeia): number {
   const u = lastSnap(c)
   if (!u) return 0
-  return calcScore({ ...u, producao: c.producaoAnual })
+  return calcScore({ ...u, producao: c.producaoAnual }, c.especie)
 }
 
 export function canSplit(c: Colmeia): boolean {
@@ -98,8 +127,8 @@ export function trend(c: Colmeia): 'up' | 'down' | 'stable' {
   if (c.historico.length < 2) return 'stable'
   const h = c.historico
   const d =
-    calcScore({ ...h[h.length - 1], producao: c.producaoAnual }) -
-    calcScore({ ...h[h.length - 2], producao: c.producaoAnual })
+    calcScore({ ...h[h.length - 1], producao: c.producaoAnual }, c.especie) -
+    calcScore({ ...h[h.length - 2], producao: c.producaoAnual }, c.especie)
   return d > 3 ? 'up' : d < -3 ? 'down' : 'stable'
 }
 

@@ -4,11 +4,15 @@ import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import Link from 'next/link'
 import {
   Colmeia, CheckIn, ESPECIES,
   currentScore, lastSnap, canSplit, trend, scoreColor, scoreLabel, calcScore,
 } from '@/lib/scoring'
 import PixButton from '@/components/PixButton'
+import AlertaCheckin from '@/components/AlertaCheckin'
+import GraficoEvolucao from '@/components/GraficoEvolucao'
+import ExportarPDF from '@/components/ExportarPDF'
 
 // ─── Hook de dados ─────────────────────────────────────────────────────────────
 function useColmeias(userId: string | undefined) {
@@ -168,8 +172,8 @@ function ModalCheckin({ colmeia, onSave, onClose }: { colmeia: Colmeia; onSave: 
   const [san, setSan] = useState(ult?.sanidade ?? 3)
   const [atv, setAtv] = useState(ult?.atividade ?? 3)
   const [notas, setNotas] = useState('')
-  const novoScore = calcScore({ producao: colmeia.producaoAnual, populacao: pop, mansidao: man, sanidade: san, atividade: atv })
-  const delta = ult ? (novoScore - calcScore({ producao: colmeia.producaoAnual, ...ult })).toFixed(1) : null
+  const novoScore = calcScore({ producao: colmeia.producaoAnual, populacao: pop, mansidao: man, sanidade: san, atividade: atv }, colmeia.especie)
+  const delta = ult ? (novoScore - calcScore({ producao: colmeia.producaoAnual, ...ult }, colmeia.especie)).toFixed(1) : null
   return (
     <Modal title="Check-in Semanal" sub={colmeia.nome} onClose={onClose}>
       <div style={{ display: 'flex', gap: 20, padding: '12px 20px 16px', alignItems: 'center' }}>
@@ -314,7 +318,7 @@ function DetalheView({ c, onBack, onCheckin, onColheita, onDelete }: {
   const esp = ESPECIES.find(e => e.id === c.especie)
   const chartData = c.historico.map(h => ({
     sem: new Date(h.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-    score: calcScore({ producao: c.producaoAnual, populacao: h.populacao, mansidao: h.mansidao, sanidade: h.sanidade, atividade: h.atividade }),
+    score: calcScore({ producao: c.producaoAnual, populacao: h.populacao, mansidao: h.mansidao, sanidade: h.sanidade, atividade: h.atividade }, c.especie),
     populacao: h.populacao, mansidao: h.mansidao, sanidade: h.sanidade, atividade: h.atividade,
   }))
   const params = snap ? [
@@ -329,8 +333,11 @@ function DetalheView({ c, onBack, onCheckin, onColheita, onDelete }: {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: `1px solid ${C.border}`, background: C.surface }}>
         <button onClick={onBack} style={{ border: 'none', background: 'none', cursor: 'pointer', color: C.amber, fontSize: 15, fontWeight: 600 }}>‹ Colmeias</button>
         <span style={{ fontWeight: 700 }}>{c.nome}</span>
-        <button onClick={() => { if (confirm(`Excluir "${c.nome}"?`)) onDelete() }}
-          style={{ border: 'none', background: 'none', cursor: 'pointer', color: C.red, fontSize: 14, fontWeight: 600 }}>Excluir</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <ExportarPDF colmeia={c} score={s} />
+          <button onClick={() => { if (confirm(`Excluir "${c.nome}"?`)) onDelete() }}
+            style={{ border: 'none', background: 'none', cursor: 'pointer', color: C.red, fontSize: 14, fontWeight: 600 }}>Excluir</button>
+        </div>
       </div>
       {/* Hero */}
       <div style={{ padding: 20 }}>
@@ -417,6 +424,12 @@ function DetalheView({ c, onBack, onCheckin, onColheita, onDelete }: {
               ? 'Fenótipo intermediário. Separe variações sazonais de estresse biótico/abiótico correlacionando com fenologia floral local.'
               : 'Fenótipo crítico. Correlacione quedas com infestações de Phoridae, déficit floral e pesticidas vizinhos no histórico longitudinal.'}
           </div>
+          <GraficoEvolucao
+            nome={c.nome}
+            historico={c.historico}
+            producaoAnual={c.producaoAnual}
+            especie={c.especie}
+          />
         </div>
       )}
       {/* Histórico */}
@@ -427,7 +440,7 @@ function DetalheView({ c, onBack, onCheckin, onColheita, onDelete }: {
             ? <div style={{ textAlign: 'center', padding: '40px 0', color: C.text3 }}>Nenhum check-in registrado.</div>
             : <Card>
                 {[...c.historico].reverse().map((h, i, arr) => {
-                  const hs = calcScore({ producao: c.producaoAnual, populacao: h.populacao, mansidao: h.mansidao, sanidade: h.sanidade, atividade: h.atividade })
+                  const hs = calcScore({ producao: c.producaoAnual, populacao: h.populacao, mansidao: h.mansidao, sanidade: h.sanidade, atividade: h.atividade }, c.especie)
                   return (
                     <div key={h.id} style={{ display: 'flex', gap: 12, padding: '12px 16px', borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : 'none' }}>
                       <div style={{ width: 64, flexShrink: 0, fontSize: 12, color: C.text3, paddingTop: 2 }}>
@@ -513,7 +526,7 @@ export default function AppPage() {
   const maxSem = Math.max(...colmeias.map(c => c.historico.length), 0)
   const meliHist = maxSem >= 2 ? Array.from({ length: Math.min(8, maxSem) }, (_, i) => {
     const n = Math.min(8, maxSem)
-    const vals = colmeias.flatMap(c => { const idx = c.historico.length - n + i; return idx < 0 ? [] : [calcScore({ producao: c.producaoAnual, ...c.historico[idx] })] })
+    const vals = colmeias.flatMap(c => { const idx = c.historico.length - n + i; return idx < 0 ? [] : [calcScore({ producao: c.producaoAnual, ...c.historico[idx] }, c.especie)] })
     const ref = colmeias.find(c => c.historico.length >= n - i)
     const h = ref?.historico[ref.historico.length - n + i]
     return { sem: h ? new Date(h.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : `S${i+1}`, score: vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length * 10) / 10 : 0 }
@@ -527,6 +540,19 @@ export default function AppPage() {
         <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.3px', color: C.amber }}>⬡ MeliGenética</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {syncing && <span style={{ fontSize: 11, color: C.text3 }}>💾 salvando...</span>}
+
+          <Link
+            href="/app/comparar"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: '#fef3c7', color: '#92400e',
+              border: '1px solid #fde68a', borderRadius: 10,
+              padding: '8px 16px', fontSize: 14, fontWeight: 600,
+              textDecoration: 'none',
+            }}
+          >
+            📊 Comparar
+          </Link>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: C.bg, borderRadius: 99, padding: '4px 10px 4px 6px', border: `1px solid ${C.border}`, cursor: 'pointer' }}
             onClick={() => signOut({ callbackUrl: '/login' })} title="Sair">
@@ -543,6 +569,14 @@ export default function AppPage() {
 
       {/* ── Conteúdo ── */}
       <div style={{ paddingBottom: 80, minHeight: 'calc(100vh - 52px - 65px)' }}>
+        <AlertaCheckin
+          colmeias={colmeias.map(c => ({
+            nome: c.nome,
+            ultimoCheckin: c.historico?.length > 0
+              ? c.historico[c.historico.length - 1].data
+              : null
+          }))}
+        />
         {detalhe ? (
           <DetalheView
             c={colmeias.find(x => x.id === detalhe.id) || detalhe}
