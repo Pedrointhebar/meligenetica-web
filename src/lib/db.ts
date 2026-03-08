@@ -56,6 +56,7 @@ export async function getColmeiasWithCheckins(userId: string) {
   return colmeias.map((c: any) => ({
     id: c.id, nome: c.nome, especie: c.especie,
     producaoAnual: c.producao_anual, anoProducao: c.ano_producao,
+    mae: c.mae, nomeMae: c.nome_mae,
     historico: checkins
       .filter((h: any) => h.colmeia_id === c.id)
       .map((h: any) => ({ id: h.id, data: h.data, populacao: h.populacao, mansidao: h.mansidao, sanidade: h.sanidade, atividade: h.atividade, notas: h.notas })),
@@ -64,10 +65,10 @@ export async function getColmeiasWithCheckins(userId: string) {
 
 export async function upsertColmeia(userId: string, col: any) {
   const sql = getDb()
-  await sql`INSERT INTO colmeias (id,user_id,nome,especie,producao_anual,ano_producao)
-    VALUES (${col.id},${userId},${col.nome},${col.especie},${col.producaoAnual},${col.anoProducao})
+  await sql`INSERT INTO colmeias (id,user_id,nome,especie,producao_anual,ano_producao,mae,nome_mae)
+    VALUES (${col.id},${userId},${col.nome},${col.especie},${col.producaoAnual},${col.anoProducao},${col.mae ?? null},${col.nomeMae ?? null})
     ON CONFLICT(id) DO UPDATE SET nome=EXCLUDED.nome, especie=EXCLUDED.especie,
-    producao_anual=EXCLUDED.producao_anual, ano_producao=EXCLUDED.ano_producao, updated_at=NOW()`
+    producao_anual=EXCLUDED.producao_anual, ano_producao=EXCLUDED.ano_producao, mae=EXCLUDED.mae, nome_mae=EXCLUDED.nome_mae, updated_at=NOW()`
 }
 
 export async function deleteColmeia(id: string, userId: string) {

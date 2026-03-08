@@ -310,6 +310,194 @@ function ModalNovaColmeia({ onSave, onClose }: { onSave: (c: Colmeia) => void; o
   )
 }
 
+// ─── Modal Divisão ─────────────────────────────────────────────────────────────
+function ModalDivisao({ colmeias, onSave, onClose }: {
+  colmeias: Colmeia[]
+  onSave: (filha: Colmeia) => void
+  onClose: () => void
+}) {
+  const [mae, setMae] = useState(colmeias[0]?.id ?? '')
+  const [nome, setNome] = useState('')
+  const [especie, setEspecie] = useState('jatai')
+  const [prod, setProd] = useState(0.5)
+  const [ano, setAno] = useState(new Date().getFullYear())
+  const [pop, setPop] = useState(3)
+  const [man, setMan] = useState(3)
+  const [san, setSan] = useState(3)
+  const [atv, setAtv] = useState(3)
+
+  const colmeiaMae = colmeias.find(c => c.id === mae)
+
+  // Herdar espécie da mãe automaticamente ao selecionar
+  useEffect(() => {
+    if (colmeiaMae) setEspecie(colmeiaMae.especie)
+  }, [mae])
+
+  const scoreFilha = calcScore(
+    { producao: prod, populacao: pop, mansidao: man, sanidade: san, atividade: atv },
+    especie
+  )
+
+  return (
+    <Modal title="Registrar Divisão" sub="Nova colmeia a partir de uma colônia existente" onClose={onClose}>
+
+      {/* Preview da mãe */}
+      {colmeiaMae && (
+        <div style={{
+          margin: '8px 16px 4px',
+          background: `${C.amber}10`,
+          border: `1px solid ${C.amber}30`,
+          borderRadius: 12,
+          padding: '10px 14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+        }}>
+          <span style={{ fontSize: 22 }}>🐝</span>
+          <div>
+            <div style={{ fontSize: 12, color: C.text3 }}>Colmeia mãe selecionada</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.amber }}>{colmeiaMae.nome}</div>
+            <div style={{ fontSize: 12, color: C.text3, fontStyle: 'italic' }}>
+              {ESPECIES.find(e => e.id === colmeiaMae.especie)?.sci}
+            </div>
+          </div>
+          <ScoreRing score={currentScore(colmeiaMae)} size={44} />
+        </div>
+      )}
+
+      {/* Seleção da mãe */}
+      <div style={{ background: C.bg, borderRadius: 12, margin: '12px 16px' }}>
+        <FormField label="Colônia mãe">
+          <select
+            value={mae}
+            onChange={e => setMae(e.target.value)}
+            style={{ border: 'none', background: 'transparent', fontSize: 15, color: C.amber, cursor: 'pointer', maxWidth: 180 }}
+          >
+            {colmeias.map(c => (
+              <option key={c.id} value={c.id}>{c.nome}</option>
+            ))}
+          </select>
+        </FormField>
+      </div>
+
+      {/* Divider visual */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 16px', marginBottom: 4 }}>
+        <div style={{ flex: 1, height: 1, background: C.border }}/>
+        <span style={{ fontSize: 18 }}>🪲</span>
+        <span style={{ fontSize: 12, color: C.text3, fontWeight: 600 }}>Dados da nova colmeia filha</span>
+        <div style={{ flex: 1, height: 1, background: C.border }}/>
+      </div>
+
+      {/* Preview do score da filha */}
+      <div style={{ display: 'flex', gap: 20, padding: '8px 20px 12px', alignItems: 'center' }}>
+        <ScoreRing score={scoreFilha} size={72} />
+        <div>
+          <div style={{ fontSize: 12, color: C.text3 }}>Score inicial estimado</div>
+          <div style={{ fontSize: 14, color: C.text2, marginTop: 4 }}>
+            Originada de <strong style={{ color: C.amber }}>{colmeiaMae?.nome ?? '—'}</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* Campos da filha */}
+      <div style={{ background: C.bg, borderRadius: 12, margin: '0 16px 12px' }}>
+        <FormField label="Nome da filha">
+          <input
+            value={nome}
+            onChange={e => setNome(e.target.value)}
+            placeholder="ex: Butia II"
+            style={{ border: 'none', background: 'transparent', fontSize: 15, color: C.text, textAlign: 'right', outline: 'none', flex: 1 }}
+          />
+        </FormField>
+        <FormField label="Espécie">
+          <select
+            value={especie}
+            onChange={e => setEspecie(e.target.value)}
+            style={{ border: 'none', background: 'transparent', fontSize: 15, color: C.amber, cursor: 'pointer' }}
+          >
+            {ESPECIES.map(e => <option key={e.id} value={e.id}>{e.nome}</option>)}
+          </select>
+        </FormField>
+        <FormField label="Produção anual (kg)">
+          <input
+            type="number" min={0} step={0.1} value={prod}
+            onChange={e => setProd(parseFloat(e.target.value) || 0)}
+            style={{ border: 'none', background: 'transparent', fontSize: 15, color: C.amber, textAlign: 'right', width: 70, outline: 'none' }}
+          />
+        </FormField>
+        <FormField label="Ano da colheita">
+          <select
+            value={ano}
+            onChange={e => setAno(parseInt(e.target.value))}
+            style={{ border: 'none', background: 'transparent', fontSize: 15, color: C.amber, cursor: 'pointer' }}
+          >
+            {Array.from({ length: 11 }, (_, i) => 2020 + i).map(y => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </FormField>
+      </div>
+
+      {/* Sliders */}
+      <div style={{ background: C.bg, borderRadius: 12, margin: '0 16px 16px' }}>
+        <SliderField label="Força populacional" value={pop} onChange={setPop} min={0} max={10} hint="Frames cobertos (0–10)" color={C.green} />
+        <SliderField label="Mansidão"           value={man} onChange={setMan} min={0} max={5}  hint="0 = defensiva · 5 = mansa"   color="#007AFF" />
+        <SliderField label="Sanidade geral"     value={san} onChange={setSan} min={0} max={5}  hint="0 = doente · 5 = saudável"   color={C.red} />
+        <SliderField label="Atividade de voo"   value={atv} onChange={setAtv} min={0} max={5}  hint="Forrageamento observado"      color={C.orange} />
+      </div>
+
+      {/* Botão salvar */}
+      <button
+        disabled={!nome.trim() || !mae}
+        onClick={() => {
+          const filha: Colmeia = {
+            id: crypto.randomUUID(),
+            nome: nome.trim(),
+            especie,
+            producaoAnual: prod,
+            anoProducao: ano,
+            mae: mae,
+            nomeMae: colmeiaMae?.nome,
+            historico: [{
+              id: crypto.randomUUID(),
+              data: new Date().toISOString().split('T')[0],
+              populacao: pop,
+              mansidao: man,
+              sanidade: san,
+              atividade: atv,
+              notas: `Originada por divisão de ${colmeiaMae?.nome ?? 'colmeia desconhecida'}`,
+            }],
+          }
+          onSave(filha)
+        }}
+        style={{
+          display: 'block',
+          width: 'calc(100% - 32px)',
+          margin: '0 16px',
+          background: nome.trim() && mae ? C.amber : C.border,
+          color: nome.trim() && mae ? 'white' : C.text3,
+          border: 'none',
+          borderRadius: 12,
+          padding: '15px',
+          fontSize: 16,
+          fontWeight: 700,
+          cursor: nome.trim() && mae ? 'pointer' : 'default',
+        }}
+      >
+        🪲 Registrar Divisão
+      </button>
+
+      {/* Nota científica */}
+      <p style={{
+        fontSize: 12, color: C.text3, textAlign: 'center',
+        padding: '12px 20px 0', lineHeight: 1.5, margin: 0,
+      }}>
+        A divisão será registrada com referência à colônia mãe para rastreamento genealógico
+      </p>
+    </Modal>
+  )
+}
+
 // ─── Detalhe da Colmeia ─────────────────────────────────────────────────────────
 function DetalheView({ c, onBack, onCheckin, onColheita, onDelete }: {
   c: Colmeia; onBack: () => void; onCheckin: () => void; onColheita: () => void; onDelete: () => void
@@ -347,6 +535,19 @@ function DetalheView({ c, onBack, onCheckin, onColheita, onDelete }: {
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 13, color: C.text3 }}>{esp?.nome}</div>
               <div style={{ fontSize: 13, color: C.text3, fontStyle: 'italic', marginTop: 2 }}>{esp?.sci}</div>
+              {c.nomeMae && (
+                <div style={{
+                  marginTop: 8,
+                  fontSize: 12,
+                  color: C.text3,
+                  background: `${C.amber}10`,
+                  borderRadius: 8,
+                  padding: '4px 10px',
+                  display: 'inline-block',
+                }}>
+                  🪲 Originada de <span style={{ color: C.amber, fontWeight: 700 }}>{c.nomeMae}</span>
+                </div>
+              )}
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
                 <TrendBadge t={t}/>
                 {div && <span style={{ fontSize: 11, fontWeight: 700, color: C.green, background: `${C.green}18`, borderRadius: 99, padding: '2px 8px' }}>✓ Apta para divisão</span>}
@@ -486,6 +687,7 @@ export default function AppPage() {
   const [modalCheckin, setModalCheckin] = useState<Colmeia | null>(null)
   const [modalColheita, setModalColheita] = useState<Colmeia | null>(null)
   const [modalNova, setModalNova] = useState(false)
+  const [modalDivisao, setModalDivisao] = useState(false)
 
   const scoreMedia = useMemo(() => !colmeias.length ? 0 : Math.round(colmeias.reduce((a, c) => a + currentScore(c), 0) / colmeias.length * 10) / 10, [colmeias])
   const ranking = useMemo(() => [...colmeias].sort((a, b) => currentScore(b) - currentScore(a)), [colmeias])
@@ -696,9 +898,27 @@ export default function AppPage() {
               <div style={{ padding: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                   <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.5px', fontFamily: 'Georgia, serif' }}>Colmeias</h1>
-                  <button onClick={() => setModalNova(true)} style={{ background: C.amber, color: 'white', border: 'none', borderRadius: 10, padding: '8px 18px', fontWeight: 700, fontSize: 15, cursor: 'pointer' }}>
-                    + Nova
-                  </button>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={() => setModalDivisao(true)}
+                      disabled={colmeias.length === 0}
+                      style={{
+                        background: colmeias.length > 0 ? `${C.green}18` : C.bg,
+                        color: colmeias.length > 0 ? C.green : C.text3,
+                        border: `1px solid ${colmeias.length > 0 ? C.green : C.border}`,
+                        borderRadius: 10,
+                        padding: '8px 14px',
+                        fontWeight: 700,
+                        fontSize: 14,
+                        cursor: colmeias.length > 0 ? 'pointer' : 'default',
+                      }}
+                    >
+                      🪲 Divisão
+                    </button>
+                    <button onClick={() => setModalNova(true)} style={{ background: C.amber, color: 'white', border: 'none', borderRadius: 10, padding: '8px 18px', fontWeight: 700, fontSize: 15, cursor: 'pointer' }}>
+                      + Nova
+                    </button>
+                  </div>
                 </div>
                 {colmeias.length === 0
                   ? <div style={{ textAlign: 'center', padding: '60px 0' }}>
@@ -716,6 +936,11 @@ export default function AppPage() {
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontWeight: 600, fontSize: 16 }}>{c.nome}</div>
                               <div style={{ fontSize: 12, color: C.text3, fontStyle: 'italic' }}>{ESPECIES.find(e => e.id === c.especie)?.sci}</div>
+                              {c.nomeMae && (
+                                <div style={{ fontSize: 11, color: C.text3, marginTop: 2 }}>
+                                  🪲 originada de <span style={{ color: C.amber, fontWeight: 600 }}>{c.nomeMae}</span>
+                                </div>
+                              )}
                               <div style={{ display: 'flex', gap: 5, marginTop: 4 }}><TrendBadge t={t}/></div>
                             </div>
                             <ScoreRing score={s} size={48}/>
@@ -759,6 +984,13 @@ export default function AppPage() {
           onClose={() => setModalColheita(null)}/>
       )}
       {modalNova && <ModalNovaColmeia onSave={addColmeia} onClose={() => setModalNova(false)}/>}
+      {modalDivisao && (
+        <ModalDivisao
+          colmeias={colmeias}
+          onSave={c => { addColmeia(c); setModalDivisao(false) }}
+          onClose={() => setModalDivisao(false)}
+        />
+      )}
 
       <div style={{
         display: 'flex',

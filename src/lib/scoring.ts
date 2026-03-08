@@ -19,6 +19,8 @@ export interface Colmeia {
   producaoAnual: number
   anoProducao: number
   historico: CheckIn[]
+  mae?: string // ID da colmeia-mãe (se veio de uma divisão)
+  nomeMae?: string // Nome da colmeia-mãe para exibição
 }
 
 // ─── Pesos fenotípicos por espécie ─────────────────────────────────────────────
