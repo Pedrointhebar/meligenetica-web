@@ -22,7 +22,7 @@ type Colmeia = {
 
 type Props = {
   colmeias: Colmeia[]
-  calcularScore: (c: Checkin, especie: string) => number
+  calcularScore: (p: { producao: number; populacao: number; mansidao: number; sanidade: number; atividade: number }, especie: string) => number
 }
 
 // Tooltip customizado com estilo do app
@@ -80,7 +80,13 @@ export default function GraficoScorePlantel({ colmeias, calcularScore }: Props) 
         .sort((a, b) => b.data.localeCompare(a.data))
 
       if (checkinsAte.length > 0) {
-        scores.push(calcularScore(checkinsAte[0], colmeia.especie))
+        scores.push(calcularScore({
+          producao: colmeia.producaoAnual,
+          populacao: checkinsAte[0].populacao,
+          mansidao: checkinsAte[0].mansidao,
+          sanidade: checkinsAte[0].sanidade,
+          atividade: checkinsAte[0].atividade
+        }, colmeia.especie))
       }
     })
 
