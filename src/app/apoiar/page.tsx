@@ -88,6 +88,36 @@ export default function ApoiarPage() {
           Qualquer valor é bem-vindo e muito apreciado 💛
         </p>
 
+        <div style={{ marginTop: 32, paddingTop: 32, borderTop: '1px solid #E2D9CC' }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, color: '#1A1209' }}>
+            Apoio Extra
+          </h2>
+          <p style={{ fontSize: 14, color: '#5C4A2A', marginBottom: 20 }}>
+            Para doações adicionais, use esta chave Pix aleatória:
+          </p>
+          <div style={{ background: 'white', borderRadius: 14, padding: '16px 20px',
+            border: '1px solid #E2D9CC', marginBottom: 16,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#9B8B70',
+                textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>
+                Chave Pix Aleatória
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1209', letterSpacing: '0.5px' }}>
+                70f87166-2838-47aa-837e-3e29c5770d6c
+              </div>
+            </div>
+            <button onClick={() => { navigator.clipboard.writeText('70f87166-2838-47aa-837e-3e29c5770d6c'); alert('Chave copiada!'); }} style={{
+              background: '#C9861A',
+              color: 'white', border: 'none', borderRadius: 8,
+              padding: '10px 18px', fontWeight: 700, fontSize: 14,
+              cursor: 'pointer', whiteSpace: 'nowrap',
+            }}>
+              Copiar
+            </button>
+          </div>
+        </div>
+
         <div style={{ marginTop: 48 }}>
           <Link href="/app" style={{ background: '#C9861A', color: 'white',
             padding: '12px 28px', borderRadius: 10, fontWeight: 700,
