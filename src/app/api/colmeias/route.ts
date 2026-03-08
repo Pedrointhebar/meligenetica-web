@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+// import { auth } from '@clerk/nextjs/server'
 import {
   getColmeiasWithCheckins, upsertColmeia, upsertCheckin, deleteColmeia
 } from '@/lib/db'
@@ -8,23 +7,24 @@ import {
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id)
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  // const { userId } = auth()
+  // if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
-  const data = await getColmeiasWithCheckins(session.user.id)
+  const userId = 'temp-user-id' // Temporário
+  const data = await getColmeiasWithCheckins(userId)
   return NextResponse.json(data)
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id)
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  // const { userId } = auth()
+  // if (!userId)
+  //   return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+
+  const userId = 'temp-user-id' // Temporário
 
   try {
     const body = await req.json()
     const { action, colmeia, checkin, colmeiaId } = body
-    const userId = session.user.id
 
     if (action === 'upsert_colmeia') {
       await upsertColmeia(userId, colmeia)

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
-import { useSession, signOut } from 'next-auth/react'
+// import { useUser, UserButton } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import {
@@ -458,12 +458,13 @@ function DetalheView({ c, onBack, onCheckin, onColheita, onDelete }: {
 
 // ─── App Principal ──────────────────────────────────────────────────────────────
 export default function AppPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  // const { user, isLoaded } = useUser()
+  // const router = useRouter()
 
-  useEffect(() => { if (status === 'unauthenticated') router.push('/login') }, [status, router])
+  // useEffect(() => { if (isLoaded && !user) router.push('/sign-in') }, [isLoaded, user, router])
 
-  const userId = (session?.user as any)?.id as string | undefined
+  // const userId = user?.id
+  const userId = 'temp-user-id' // Temporário
   const { colmeias, setColmeias, loaded, syncing, syncColmeia, syncCheckin, syncDelete } = useColmeias(userId)
 
   const [tab, setTab] = useState<'painel' | 'ranking' | 'colmeias'>('colmeias')
@@ -496,7 +497,17 @@ export default function AppPage() {
   const addColmeia = async (c: Colmeia) => { setColmeias([...colmeias, c]); setModalNova(false); await syncColmeia(c) }
   const deleteColmeia = async (id: string) => { setColmeias(colmeias.filter(c => c.id !== id)); setDetalhe(null); await syncDelete(id) }
 
-  if (status === 'loading' || (status === 'authenticated' && !loaded)) return (
+  // if (status === 'loading' || (status === 'authenticated' && !loaded)) return (
+  //   <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.bg }}>
+  //     <div style={{ textAlign: 'center' }}>
+  //       <div style={{ fontSize: 48, marginBottom: 12 }}>🐝</div>
+  //       <div style={{ color: C.text3, fontSize: 14 }}>Carregando seu meliponário...</div>
+  //     </div>
+  //   </div>
+  // )
+  // if (status === 'unauthenticated') return null
+
+  if (!loaded) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.bg }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontSize: 48, marginBottom: 12 }}>🐝</div>
@@ -504,7 +515,6 @@ export default function AppPage() {
       </div>
     </div>
   )
-  if (status === 'unauthenticated') return null
 
   const hoje = new Date(), lim = new Date(hoje)
   lim.setDate(hoje.getDate() - 7)
@@ -527,16 +537,8 @@ export default function AppPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {syncing && <span style={{ fontSize: 11, color: C.text3 }}>💾 salvando...</span>}
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: C.bg, borderRadius: 99, padding: '4px 10px 4px 6px', border: `1px solid ${C.border}`, cursor: 'pointer' }}
-            onClick={() => signOut({ callbackUrl: '/login' })} title="Sair">
-            <div style={{ width: 24, height: 24, borderRadius: '50%', background: `${C.amber}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: C.amber }}>
-              {session?.user?.name?.[0]?.toUpperCase() || '?'}
-            </div>
-            <span style={{ fontSize: 12, color: C.text2, maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {session?.user?.name?.split(' ')[0]}
-            </span>
-            <span style={{ fontSize: 11, color: C.text3 }}>Sair</span>
-          </div>
+          {/* <UserButton afterSignOutUrl="/sign-in" /> */}
+          <div style={{ fontSize: 12, color: C.text2 }}>Usuário Teste</div>
         </div>
       </div>
 
