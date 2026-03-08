@@ -8,6 +8,7 @@ import {
   Colmeia, CheckIn, ESPECIES,
   currentScore, lastSnap, canSplit, trend, scoreColor, scoreLabel, calcScore,
 } from '@/lib/scoring'
+import PixButton from '@/components/PixButton'
 
 // ─── Hook de dados ─────────────────────────────────────────────────────────────
 function useColmeias(userId: string | undefined) {
@@ -719,6 +720,16 @@ export default function AppPage() {
           onClose={() => setModalColheita(null)}/>
       )}
       {modalNova && <ModalNovaColmeia onSave={addColmeia} onClose={() => setModalNova(false)}/>}
+
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        padding: '48px 24px 32px',
+        borderTop: '1px solid #e5e7eb',
+        marginTop: 48,
+      }}>
+        <PixButton />
+      </div>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import PixButton from '@/components/PixButton'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -161,6 +162,15 @@ export default function LandingPage() {
         © 2025 MeliGenética · Todos os direitos reservados ·{' '}
         <a href="/privacidade" style={{ color: 'var(--amber)' }}>Privacidade</a> ·{' '}
         <a href="/termos" style={{ color: 'var(--amber)' }}>Termos</a>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          padding: '48px 24px',
+          borderTop: '1px solid #e5e7eb',
+          marginTop: 32,
+        }}>
+          <PixButton />
+        </div>
       </footer>
     </div>
   )
