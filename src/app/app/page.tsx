@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
-// import { useUser, UserButton } from '@clerk/nextjs'
+import { useUser, UserButton } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import {
@@ -458,13 +458,12 @@ function DetalheView({ c, onBack, onCheckin, onColheita, onDelete }: {
 
 // ─── App Principal ──────────────────────────────────────────────────────────────
 export default function AppPage() {
-  // const { user, isLoaded } = useUser()
-  // const router = useRouter()
+  const { user, isLoaded } = useUser()
+  const router = useRouter()
 
-  // useEffect(() => { if (isLoaded && !user) router.push('/sign-in') }, [isLoaded, user, router])
+  useEffect(() => { if (isLoaded && !user) router.push('/sign-in') }, [isLoaded, user, router])
 
-  // const userId = user?.id
-  const userId = 'temp-user-id' // Temporário
+  const userId = user?.id
   const { colmeias, setColmeias, loaded, syncing, syncColmeia, syncCheckin, syncDelete } = useColmeias(userId)
 
   const [tab, setTab] = useState<'painel' | 'ranking' | 'colmeias'>('colmeias')
@@ -537,8 +536,7 @@ export default function AppPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {syncing && <span style={{ fontSize: 11, color: C.text3 }}>💾 salvando...</span>}
 
-          {/* <UserButton afterSignOutUrl="/sign-in" /> */}
-          <div style={{ fontSize: 12, color: C.text2 }}>Usuário Teste</div>
+          <UserButton afterSignOutUrl="/sign-in" />
         </div>
       </div>
 

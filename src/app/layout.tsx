@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { ClerkProvider, SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import './globals.css'
 import Providers from '@/components/Providers'
 
@@ -42,7 +43,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <ClerkProvider>
+          <header style={{ background: '#fff', borderBottom: '1px solid #E2D9CC', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.3px', color: '#C9861A' }}>
+              ⬡ MeliGenética
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton />
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
+          </header>
+          <Providers>{children}</Providers>
+        </ClerkProvider>
       </body>
     </html>
   )
