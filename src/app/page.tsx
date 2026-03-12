@@ -157,6 +157,41 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── SEO: Sobre Meliponicultura ── */}
+      <section style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px 80px' }}>
+        <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16, fontFamily: 'Georgia, serif', color: 'var(--text)' }}>
+          O que é Meliponicultura?
+        </h2>
+        <p style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.8, marginBottom: 16 }}>
+          A meliponicultura é a criação racional de abelhas sem ferrão (Meliponini), abelhas nativas do Brasil com grande importância ecológica e econômica. Espécies como Jataí (Tetragonisca angustula), Mandaçaia (Melipona quadrifasciata), Uruçu (Melipona scutellaris), Tiúba (Melipona compressipes) e Jandaíra (Melipona subnitida) são amplamente criadas por meliponicultores em todo o país.
+        </p>
+        <p style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.8, marginBottom: 16 }}>
+          A seleção genética em meliponicultura consiste em identificar e propagar colônias com melhores índices fenotípicos — maior produção de mel, força populacional, mansidão, sanidade e atividade de voo. O MeliGenética automatiza esse processo com base em critérios científicos validados.
+        </p>
+        <p style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.8 }}>
+          A divisão de colmeias é a principal técnica de reprodução em meliponicultura. Realizada corretamente, a partir das colônias geneticamente superiores, garante a evolução do plantel ao longo das gerações.
+        </p>
+      </section>
+      {/* ── FAQ ── */}
+      <section style={{ background: 'white', borderTop: '1px solid var(--border)', padding: '64px 24px' }}>
+        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 32, fontFamily: 'Georgia, serif', color: 'var(--text)' }}>
+            Perguntas frequentes
+          </h2>
+          {[
+            { p: 'O MeliGenética é gratuito?', r: 'Sim, 100% gratuito e sem limite de colmeias. Não precisa de cartão de crédito.' },
+            { p: 'Quais espécies de abelhas sem ferrão são suportadas?', r: 'Jataí, Mandaçaia, Uruçu, Tiúba, Jandaíra, Iraí, Tubiba e outras espécies de Meliponini brasileiros.' },
+            { p: 'Como funciona o score genético?', r: 'É um índice ponderado multi-critério baseado em Souza et al. (2018), considerando produção anual (30%), força populacional (20%), sanidade (20%), atividade de voo (15%) e mansidão (15%).' },
+            { p: 'Quando devo fazer a divisão de uma colmeia?', r: 'O sistema indica automaticamente quando uma colônia atinge os critérios mínimos: score acima de 65, população forte e boa sanidade.' },
+            { p: 'Meus dados ficam salvos?', r: 'Sim, todos os dados são salvos na nuvem e sincronizados entre dispositivos.' },
+          ].map(({ p, r }, i) => (
+            <div key={i} style={{ borderBottom: '1px solid var(--border)', padding: '20px 0' }}>
+              <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8, color: 'var(--text)' }}>❓ {p}</div>
+              <div style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.7 }}>{r}</div>
+            </div>
+          ))}
+        </div>
+      </section>
       {/* ── Footer ── */}
       <footer style={{ borderTop: '1px solid var(--border)', padding: '24px', textAlign: 'center', fontSize: 13, color: 'var(--text3)' }}>
         © 2025 MeliGenética · Todos os direitos reservados ·{' '}
