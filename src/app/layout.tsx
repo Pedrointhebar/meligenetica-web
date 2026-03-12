@@ -1,38 +1,60 @@
 import type { Metadata, Viewport } from 'next'
-import './globals.css'
-import Providers from '@/components/Providers'
-
-export const metadata: Metadata = {
-  title: 'MeliGenética — Seleção genética de abelhas sem ferrão',
-  description: 'App científico para gestão fenotípica e seleção genética de meliponários. Registre check-ins semanais, monitore índices e tome decisões baseadas em dados.',
-  keywords: 'abelhas sem ferrão, meliponário, seleção genética, apicultura, meliponicultura, Melipona, Tetragonisca',
-  authors: [{ name: 'MeliGenética' }],
-  openGraph: {
-    title: 'MeliGenética — Seleção genética de abelhas sem ferrão',
-    description: 'Registre check-ins semanais, monitore índices fenotípicos e tome decisões de divisão com base em dados científicos.',
-    type: 'website',
-    locale: 'pt_BR',
-    siteName: 'MeliGenética',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'MeliGenética',
-    description: 'Seleção genética de abelhas sem ferrão baseada em ciência.',
-  },
-  manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'MeliGenética',
-  },
-  robots: { index: true, follow: true },
-}
+import { Providers } from './providers'
 
 export const viewport: Viewport = {
   themeColor: '#C9861A',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+}
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://meligenetica.com'),
+  title: {
+    default: 'MeliGenética — Gestão e Seleção Genética de Meliponicultura',
+    template: '%s | MeliGenética',
+  },
+  description: 'Plataforma open-source para manejo, avaliação fenotípica e seleção genética de colônias de abelhas sem ferrão. Ideal para meliponicultores iniciantes e avançados.',
+  keywords: [
+    'meliponicultura',
+    'abelhas sem ferrão',
+    'seleção genética',
+    'manejo de colônias',
+    'meliponários',
+    'abelhas nativas',
+    'apicultura',
+    'colmeias',
+    'fenótipo',
+    'MeliGenética',
+  ],
+  authors: [{ name: 'MeliGenética', url: 'https://meligenetica.com' }],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    title: 'MeliGenética — Gestão de Meliponicultura',
+    description: 'Plataforma open-source para seleção genética e manejo de abelhas sem ferrão.',
+    url: 'https://meligenetica.com',
+    siteName: 'MeliGenética',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MeliGenética — Gestão de Meliponicultura',
+    description: 'Plataforma open-source para seleção genética e manejo de abelhas sem ferrão.',
+  },
+  alternates: {
+    canonical: 'https://meligenetica.com',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
