@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Providers } from './providers'
+import './globals.css'
 
 export const viewport: Viewport = {
   themeColor: '#C9861A',
@@ -63,9 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
-      <body>
-        <Providers>{children}</Providers>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }
